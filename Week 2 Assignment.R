@@ -1,0 +1,117 @@
+# Week 2: Math/CS 17
+# Author: Christopher Kingston
+# 01/25/2023
+
+# Review: Vectors
+
+x <- c(10:20)
+x
+typeof(x)
+class(x)
+str(x)
+
+y <- x[3:6]
+y
+
+#Review: List
+x <- list('W','e','l','c','o','m','e')
+x
+typeof(x)
+class(x)
+str(x)
+y <- x[3:5]
+y
+
+# Factors
+Work_days <- c ('Fri', 'Tues', 'Mon')
+Work_days
+Work_days_sorted <- sort(Work_days)
+Work_days_sorted
+Week_Levels <- c ('Mon', 'Tues', 'Wed', 'Thur', 'Fri', 'Sat')
+Work_days <- factor(Work_days,
+                    levels = Week_Levels )
+Work_days
+Work_days_sorted <- sort(Work_days)
+Work_days_sorted
+
+Swimmers <- c('Allie', 'Jen', 'May', 'Alice')
+Swimmer.factor <- factor(Swimmers,
+                         levels = unique(Swimmers))
+Swimmer.factor
+Swimmer.factor.sorted = sort(Swimmer.factor)
+Swimmer.factor.sorted
+
+#Basic Statistics in R
+x <- c(15:25)
+x
+summary(x)
+x.mean = mean(x)
+x.mean
+sprintf('Mean of x is %f', x.mean)
+sprintf('Mean of x is %.2f', x.mean)
+x.std = sd(x)
+print(x.std)
+x.left = x.mean - 2*x.std
+x.right = x.mean + 2*x.std
+sprintf('x_left = %.1f and x_right = %.1f', x.left, x.right)
+
+
+data()
+?rivers
+x <- rivers
+x
+x.sorted <- sort(x)
+x.sorted
+summary(x)
+x.mean = mean(x)
+x.mean
+x.std = sd(x)
+x.std
+x.left = x.mean - 2*x.std
+x.right = x.mean +2*x.std
+sprintf('x_left = %.1f and x_right = %.1f', x.left, x.right)
+x.sorted
+
+w <- which(x.sorted > x.right)
+w
+x.sorted[w]
+
+# Data Frame
+
+MyGradeBook <- data.frame(
+  Names = c('Tara', 'Calvin', 'Jason'),
+  Q1 = c(10,8,9),
+  Q2 = c(9,8,10),
+  Q3 = c(10,10,10)
+  )
+MyGradeBook
+typeof(MyGradeBook)
+class(MyGradeBook)
+str(MyGradeBook)
+MyGradeBook$Q1
+MyGradeBook$Q2
+MyGradeBook[3]
+
+MyGradeBook
+
+{
+i <- 3
+  m1 <- sprintf('Name: %s', MyGradeBook$Names[i])
+  m2 <- sprintf('Q1: %d', MyGradeBook$Q1[i])
+  m3 <- sprintf('Q2: %d', MyGradeBook$Q2[i])
+  m4 <- sprintf('Q3: %d', MyGradeBook$Q3[i])
+  cat(m1,'\n',m2,'\n',m3,'\n',m4)
+}  
+
+Addendum <- data.frame(
+  Names = c('Will','Linda'),
+  Q1 = c(7,6),
+  Q2 = c(9,10),
+  Q3 = c(8,8)
+)
+
+MyGradeBook <- rbind(MyGradeBook,Addendum)
+MyGradeBook
+
+MyGradeBook$Q4 <- c(7,10,4,0,10)
+MyGradeBook

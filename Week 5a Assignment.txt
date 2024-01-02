@@ -1,0 +1,85 @@
+# Name: Christopher Kingston
+# Date: 02/15/2023
+# Week 5 of Math 17
+
+Math17 <- data.frame(
+  ID = c(2,3,4,5),
+  Q1 = c(10,9,10,8)
+)
+
+IVC <- data.frame(
+  ID = c(1:7),
+  Local = c(TRUE,TRUE,FALSE,FALSE,FALSE,TRUE,TRUE)
+)  
+
+Math17 <- merge(Math17,IVC)
+Math17
+
+# Standard normal distribution
+# mean=0, standard deviation=1
+x <- seq(-3.5,3.5,0.1)
+plot(x,dnorm(x))
+abline(v=1)
+pnorm(1,lower.tail = FALSE)
+
+# Normal distribution
+# mean = 10, sd = 2
+x <- seq(4,16,0.1)
+plot(x,dnorm(x,mean=10,sd=2))
+pnorm(12,mean = 10, sd = 2, lower.tail = FALSE)
+abline(v=12)
+
+# Random generator from a distribution
+x1 <- rnorm(10,mean = 10,sd=2)
+x1
+x2 <- rnorm(25,mean = 34,sd=3)
+x2
+qqplot(x2,x1)
+
+x3 <- seq(-6,6,by=0.1)
+x3 <- 3*cos(x3)+1
+plot(x3)
+qqplot(x2,x3)
+
+
+# Cleaning data sets
+x <- airquality
+x
+names(x)
+summary(x)  
+
+
+w <- is.na(x$Ozone)
+w
+x$Ozone[10]
+y <- x$Ozone[is.na(x$Ozone)==FALSE]
+y
+
+index <- which(is.na(x$Ozone)==FALSE)
+index
+x$Ozone[index]
+
+sum(x$Ozone,na.rm = TRUE)
+mean(x$Ozone,na.rm = TRUE)
+sd(x$Ozone,na.rm = TRUE)
+
+QuizScores <- c(9,10,6,7,1,NA,7,3,NA,NA)
+GradeCategories <- c(-1,6,8,10)
+GradeCutOff <- cut(QuizScores,GradeCategories)
+GradeCutOff <- as.character(cut(QuizScores,GradeCategories))
+GradeCutOff
+QuizScores
+
+n <- length(QuizScores)
+n
+for (i in 1:n){
+  z <- sprintf('%d %s', QuizScores[i],GradeCutOff[i])
+  print(z)
+}
+
+
+# The ifelse command
+QuizScores
+ifelse(QuizScores>8,'A','Not an A')
+Q <- ifelse(is.na(QuizScores),'M','')
+length(which(Q=='M'))

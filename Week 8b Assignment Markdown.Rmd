@@ -1,0 +1,36 @@
+---
+title: "Week 8b Markdown Assignment"
+author: "Christopher"
+date: "2023-03-14"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+getwd()
+setwd('C:/CODING/Math17/Week08/')
+library('readxl')
+Mysales2021 <- read_excel("Sales2021.xlsx")
+Expected.Distribution <- Mysales2021$Percent/sum(Mysales2021$Percent)
+Q1 <- chisq.test(Mysales2021$Q1, p = Expected.Distribution)
+Q2 <- chisq.test(Mysales2021$Q2, p = Expected.Distribution)
+Q3 <- chisq.test(Mysales2021$Q3, p = Expected.Distribution)
+Sales2021a <- sprintf('Q1= xsq: %s p-value:%s Q2= xsq: %s p-value:%s Q3= xsq: %s p-value:%s',Q1$statistic,Q1$p.value,Q2$statistic,Q2$p.value,Q3$statistic,Q3$p.value)
+```
+
+Sales figures for the first three quarters of 2021 have been posted and what follows is a 
+chi-squared analysis of the quarterly sales vs the expected Percent of sales.
+
+```{r analysis results}
+Sales2021a
+```
+
+H0: The sales for a given quarter was independent of the Percent expectations for the quarter.
+Ha: The sales for a given quarter was dependent of the Percent expectations for the quarter.
+
+Q1: p-value = 1 > 0.05 (Failed to reject the null hypothesis)
+Q2: p-value = 1 > 0.05 (Failed to reject the null hypothesis)
+Q3: p-value = 2.2e-16 < 0.05 (Reject the null hypothesis)
+
+Conclusion: At 5% level of significance, from the data, there is sufficient evidence to 
+conclude that Q1 & Q2 failed to meet the Percent of expected sales, however Q3 met the 
+Percent of of expected sales for 2021.

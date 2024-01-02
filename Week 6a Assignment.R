@@ -1,0 +1,113 @@
+# Name: Christopher Kingston
+# Date: 02/22/2023
+# Assignment 6a
+
+x <- rnorm(200, mean=50, sd=15)
+hist(x, freq = F)
+lines(density(x))
+
+setwd('C:/CODING/Math17/Week06')
+list.files()
+Students <- read.csv('studentslist.csv')
+names(Students)
+
+hist(Students$height, freq = F, breaks = 50)
+lines(density(Students$height), col='red')
+
+Table_MajorVSGender <- table(Students$major,
+      Students$gender)
+Table_MajorVSGender
+
+barplot(Table_MajorVSGender,
+        ylab = 'counts',
+        col = rainbow(4),
+        legend = rownames(Table_MajorVSGender))
+        
+boxplot(Students$height)
+boxplot(Students$height ~ Students$major)
+
+# Functions in R
+# f(x)=x+1
+
+f <- function(x){
+  2*x+1
+}
+f(x=10)
+
+g <- function(x){
+  return(x*x)
+}
+
+f(g(7))
+
+library('purrr')
+g(7)
+7 %>% g
+10 %>% f
+g(f(10))
+10 %>% f %>% g
+
+f <- function(x,y){
+  x*x + 3*y
+}
+
+f(x=2)
+
+g <- function(x){
+  return(x*x*x)
+}
+
+x <- c(3,-2,10,5)
+g(x)
+x %>% g
+
+MakeHistogram <- function(x){
+  hist(x)
+}
+
+x <- rnorm(400, mean = 40, sd = 25)
+MakeHistogram(x)
+
+SignOf <- function(x){
+  if (x==0) return('zero')
+  if (x>0) return('positive')
+  return('negative')
+}
+
+SignOf(0)
+
+IsDivisibleBy10 <- function(x){
+  if (x %% 10==0) return(T)
+  return(F)
+}
+
+IsDivisibleBy10(230)
+
+PrintFavoriteStats <- function(x){
+  m <- mean(x)
+  s <- sd(x)
+  xL <- m-2*s
+  xR <- m+2*s
+  return(c(m,s,xL,xR))
+}
+
+
+x <- c(3,-7,0)
+W <- PrintFavoriteStats(x)
+W
+
+
+SignOf(x)
+
+w <- map(x,SignOf)
+w
+w1 <- unlist(w)
+w1
+
+w <- unlist(map(x,IsDivisibleBy10))
+w
+
+x
+unlist(x %>% (map(function(x) 100*x)))
+
+       

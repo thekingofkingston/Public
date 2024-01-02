@@ -1,0 +1,52 @@
+---
+title: "Week 8c Markdown Assignment"
+author: "Christopher Kingston"
+date: "2023-03-14"
+output: html_document
+---
+
+Below is an analysis of a study done to determine if diets (such as AHA, Mediterranean, Paleo, ect ...) affect health outcomes. The following data was gathered from a 5-year study for five diets.
+
+```{r setup, include=FALSE}
+diet <- data.frame(
+  Diet = c('1','2','3','4','5'),
+  FHD = c(8,9,5,2,12),
+  NFHD = c(27,22,14,8,25),
+  Cancer = c(4,3,11,8,11),
+  Stroke = c(14,20,25,4,17),
+  Healthy = c(156,175,210,80,312),
+  row.names = 1
+)
+diet.chi2 <- chisq.test(diet)
+library(corrplot)
+diet.chi2 <- chisq.test(diet)
+dietchis <- sprintf('Chi-squared results= x-squared:%s P-value: %s',diet.chi2$statistic,diet.chi2$p.value)
+```
+
+Health outcomes of individuals in the study are summarized in the following table at the end of the study.
+
+```{r diet table}
+diet
+```
+
+A chi-square test of independence was conducted to determine if different diets affect health outcomes.  chi-suared tests analyze residuals for discretancy within data sets. The results are below:
+
+```{r chisq results}
+dietchis
+```
+
+H0: The number of hours volunteered is independent of the type of volunteers.
+Ha: The number of hours volunteered is dependent of the type of volunteers.
+
+P-value = 0.005563 < 0.05 (Reject the null hypothesis)
+
+Conclusion: At 5% level of significance, from the data, there is sufficient evidence to conclude that health outcomes are dependent on the type of diet.
+
+```{r diet}
+corrplot(diet.chi2$residuals, is.corr = FALSE)
+```
+
+FHD = Fatal Heart Disease
+NFHD = Non-fatal Heart Disease
+
+The color of a circle is the position above (blue) or below (red) of an affect's outcome from the expected or depended distribution. The size of a circle is the significance or degree that a health outcome varies from the alternatives or amount of independence.

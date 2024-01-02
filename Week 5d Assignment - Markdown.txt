@@ -1,0 +1,28 @@
+---
+title: "AUS Landsizes Report"
+output: pdf_document
+date: "2023-02-22"
+---
+
+```{r , Setup}
+setwd("C:/CODING/Math17/Week05/")
+load("CleanedAUSlandsizes")
+```
+
+```{r AUS Land Sizes Summary}
+summary(CleanedAUSlandsizes)
+```
+
+```{r Shapiro-Wilk Normacy test failed}
+
+```
+
+"Data set exceeded Stapiro-wilks test's max 5000 sample size at 11641, however the histogram exposes that there is no normal distribution in land size within the data set"
+
+```{r Histogram of AUS landsizes}
+hist(CleanedAUSlandsizes,
+col = 'yellow',
+border = 'black',
+main = 'Histogram of Austrailian land sizes in Melbourne',
+xlab = 'Land Size',
+ylab = 'Count')

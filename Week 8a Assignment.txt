@@ -1,0 +1,113 @@
+# Name: Christopher Kingston
+# Date: 03/09/2023
+# Assignment 8a
+
+getwd()
+setwd('C:/CODING/Math17/Week08/')
+list.files()
+
+# Goodness-of-fit test: testing a variable to
+# determine if it fits a given distribution
+
+df <- data.frame(
+  Days = c('M','T','W','R','F'),
+  Expected = c(1,1,1,1,1),
+  Depart1 = c(15,12,9,9,15),
+  Dept2 = c(20,18,10,8,4)
+)
+df
+
+Expected.Distr <- df$Expected/sum(df$Expected)
+Expected.Distr
+
+chisq.test(df$Depart1, p = Expected.Distr)
+# Conclusion: Since the p-value=0.55 > 0.05, the data
+# does provide sufficient evidence to conclude
+# that the distribution of employees who do not
+# show up to work differs from the constant
+# distribution.
+
+q <- chisq.test(df$Dept2, p = Expected.Distr)
+# Conclusion: data provides sufficient evidence to conclude
+# that the number of absentees differs each day.
+
+q$p.value
+
+# In a volunteer group, adults 21 and older volunteer from
+# one to nine hours each week to spend time with a disabled
+# senior citizen. The program recruits among community college
+# students, four-year college students, and non students. 
+# In Table 11.15 is a sample of the adult volunteers and the
+# number of hours they volunteer per week.
+
+
+df <- data.frame(
+  Volunteers = c('CC','4-yt','Nonstudent'),
+  Hr_1_3 = c(111,96,91),
+  Hr_4_6 = c(96,133,150),
+  Hr_7_9 = c(48,61,53),
+  row.names = 1
+)
+df
+summary(df)
+
+# Test of independence
+
+q <- chisq.test(df)
+# H0: The number of hours volunteered is independent
+#     of the type of volunteers.
+# Ha: The number of hours volunteered is dependent
+#     of the type of volunteers.
+# p-value = 0.01132 < 0.05 (Reject the null hypothesis)
+# Conclusion: At 5% level of significance, from the data, there is sufficient evidence to conclude that the number
+# of hours volunteered and the type of volunteer are dependent on one another.
+
+df
+q$expected
+q$statistic
+
+install.packages('corrplot')
+install.packages('gridExtra')
+
+library(corrplot)
+library(gridExtra)
+library(ggplot2)
+
+# Balloon plot of residuals
+corrplot(q$residuals, is.corr = FALSE)
+
+list.files()
+df <- read('Volunteer.txt')
+df
+summary(df)
+
+q1 <- ggplot(df,
+       aes(x=x,y=Hr_1_3)) + 
+  geom_bar(stat = 'identity',
+           color='blue',
+           fill='lightblue')
+
+q2 <- ggplot(df,
+       aes(x=x,y=Hr_1_3)) + 
+  geom_bar(stat = 'identity',
+           color='blue',
+           fill='lightblue')
+
+q3 <- ggplot(df,
+             aes(x=x,y=Hr_1_3)) + 
+  geom_bar(stat = 'identity',
+           color='blue',
+           fill='lightblue')
+grid.arrange(q1,q2,q3,ncol=3)
+
+list.files()
+x <- read.csv('AmesHousing')
+str(x)
+names(x)
+
+ggplot(x,
+       aes(x=Year.Built, y=log(SalePrice))) +
+  geom_point()
+
+ggplot(x,
+       aes(Year.Built)) + geom_histogram(color='blue', fill='lightblue')

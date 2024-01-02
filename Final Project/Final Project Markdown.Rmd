@@ -1,0 +1,272 @@
+---
+title: "Final Project Math 17"
+author: "Christopher Kingston"
+date: "2023-05-25"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+# Setup
+# getwd()
+# setwd('C:/Users/PC/Documents/Final Project')
+# list.files()
+library(tidyverse)
+library(ggplot2)
+library(dplyr)
+library(gridExtra)
+library(fmsb)
+
+# Load data sets
+Season1 <- read.csv("ow2_season_01_FINAL_heroes_stats__2023-03-12.csv")
+Season2 <- read.csv("ow2_season_02_FINAL_heroes_stats__2023-03-12.csv")
+Season3 <- read.csv("ow_heroes_data_season3_2023-03-08.csv")
+
+# Clean data sets of unnecessary columns for analysis
+# colnames(Season1)
+Season1Cleaned <- Season1 |>
+  select(Hero, Skill.Tier, KDA.Ratio, Pick.Rate...,Win.Rate...,
+         Eliminations...10min, Objective.Kills...10min, Objective.Time...10min,
+         Damage...10min, Healing...10min, Deaths...10min, Role)
+Season2Cleaned <- Season2 |>
+  select(Hero, Skill.Tier, KDA.Ratio, Pick.Rate...,Win.Rate...,
+         Eliminations...10min, Objective.Kills...10min, Objective.Time...10min,
+         Damage...10min, Healing...10min, Deaths...10min, Role)
+Season3Cleaned <- Season3 |>
+  select(Hero, Skill.Tier, KDA.Ratio, Pick.Rate...,Win.Rate...,
+         Eliminations...10min, Objective.Kills...10min, Objective.Time...10min,
+         Damage...10min, Healing...10min, Deaths...10min, Role)
+
+```
+
+-Introduction-
+
+This is data analysis of ranked play data from Overwatch 2 that uses statistical analysis to evaluate not just player performance, but choice performance, trends between league ranks from Bronze to Platinum using hero statistics like season wide average  KTD (Kills To Deaths) ratios and seasonal changes. The game is part of the e-sports "meta" and the developer is generally opaque with releasing data, however uniquely the developer chose to publish a site called Overbuff with seasonal statistics. The data is available on Kaggle: "https://www.kaggle.com/datasets/mykhailokachan/overwatch-2-statistics". Here's a general outline of how such an analysis could be conducted:
+
+Data Collection: The first step was to gather data on ranked play from Overwatch 2. This has been accomplished already via Kaggle. I did attempt a more recent BeautifulSoup grab for complete season 3 data, but since the Kaggle Data was pulled and implemented at the beginning of Season 4, Blizzard Entertainment that owns and manages Overwatch 2's API updated their profile policy to auto opt out of sharing data. The result is any updated data was radially incomplete.
+
+Data Processing: Once the data had been collected, it needs to be clean and prepare for analysis. This involved removing missing values, outliers, and duplicates, as well as transforming the data into a format that is suitable for analysis. Many of the statistics are choice specific and require care and game knowledge to know which to remove.
+
+Analysis: Overwatch 2 is a competitive first-person shooter that places players with Hero selections in a shared Player-vs-Player (PvP) environment. Player's pick from 36 Heroes across three roles: Tank, Support, and Damage. The main objective of playing the game is to win and the choices players make before entering the game can play a significant factor in outcome and advancement within the league. I used exploratory and statistically analysis to reveal the dominant choices that would assist in victory and advancement. Game play statistics were organized and means tested to find the dominant Role, play style, and Hero
+
+
+
+Season and Data Structure Analysis:
+Overwatch 2 has had two complete seasons in the data sets and one incomplete Season 3 stretched from February 7th to April 3 and the data was acquired March 12th. 33 of the 55 days or 60% of teh season was captured by the data.
+Season 1 was held October 4, 2022 to December 6, 2022 for 63 days.
+Season 2 was held December 6, 2022 to February 7, 2023 also for 63 days.
+
+Season 1 and 2 were 63 days long and Season 3 was scheduled for only 55 days. Be aware that though season 3 data is incomplete, the season is shorter than previous seasons so captured more fo the percent of the season than had they been the previous season length.
+```{r Season and data structure}
+# Overwatch 2 has had two complete seasons in the data sets and one incomplete
+# Season 3 stretched from February 7th to April 3 and the data was acquired
+# March 12th.
+
+season3start = as.Date('2023-2-7')
+season3end = as.Date('2023-4-3')
+season3length <- length(seq(from=season3start, to=season3end, by='day')) - 1
+datapulldate = as.Date('2023-3-12')
+length(seq(from=season3start, to=datapulldate, by='day')) - 1
+datacompletion = 33/55
+datacompletion
+
+
+# Season 1 October 4, 2022 to December 6, 2022
+season1start = as.Date('2022-10-4')
+season1end = as.Date('2022-12-6')
+season1length <- length(seq(from=season1start, to=season1end, by='day')) - 1
+# Season 2 December 6, 2022 to February 7, 2023
+season1start = as.Date('2022-12-6')
+season1end = as.Date('2023-2-7')
+season2length <- length(seq(from=season1start, to=season1end, by='day')) - 1
+
+# 60% of season 3 was complete
+# Season 1 and 2 were 63 days long and Season 3 was scheduled for only 55 days.
+# Be aware that though season 3 data is incomplete, the season is shorter than
+# previous seasons so captured more fo the percent of the season than had they
+# been the previous season length
+```
+
+Role Choice Analysis (Pick and win rate)
+Organizing the win rate and pick rate by role revealed a staggering preference for the Support role.
+Comparing Season One Support to Damage than Support to Tank and Damage win rates were positive (S1=Season1 | S= Support | T= Tank | D= Damage)
+S1S Mean - 46.82844
+S1T Mean - 46.80025
+S1D Mean - 46.19618
+
+Comparing Season Two Support to Damage than Support to Tank and Damage win rates were positive
+S2S Mean - 46.8925
+S2T Mean - 46.47125
+S2D Mean - 46.17471
+
+Comparing Season Three Support to Damage than Support to Tank and Damage win rates were positive
+S3S Mean - 48.98531
+S3T Mean - 46.92761
+S3D Mean - 47.98544
+
+Conclusion revealed that between all three seasons Support roles have greater mean win rates than Tank and Damage roles
+
+Out of the 36 hero selections: 17 are Damage, 11 Tank, and 8 Support. The picks were far too high for the limited Support role. Creating a separate KPI to deflate the number, I multiplied the average pick rate by the representative hero percentage in each role to normalize the pick rate.
+```{r pressure, echo=TRUE}
+# Seasons Grouped by Role
+Season1Role <- Season1Cleaned |>
+  group_by(Role) |>
+  summarise(Average_win_rate_S1 = mean(Win.Rate...),
+                                    Average_pick_rate_S1 = mean(Pick.Rate...))
+Season2Role <- Season2Cleaned |>
+  group_by(Role) |>
+  summarise(Average_win_rate_S2 = mean(Win.Rate...),
+            Average_pick_rate_S2 = mean(Pick.Rate...))
+Season3Role <- Season3Cleaned |>
+  group_by(Role) |>
+  summarise(Average_win_rate_S3 = mean(Win.Rate...),
+            Average_pick_rate_S3 = mean(Pick.Rate...))
+
+# Join Season Roles
+SeasonalRoles <- full_join(Season1Role, Season2Role,by='Role')
+SeasonalRoles <- full_join(SeasonalRoles, Season3Role,by='Role')
+
+# Wins data frame
+SeasonalWinRole <- SeasonalRoles |>
+  select(Role, Average_win_rate_S1, Average_win_rate_S2, Average_win_rate_S3)
+
+# Isolating win rates by role
+# Season 1
+S1WinS <- Season1Cleaned |>
+  filter(Role == 'Support') |>
+  select(Win.Rate...)
+S1WinT <- Season1Cleaned |>
+  filter(Role == 'Tank') |>
+  select(Win.Rate...)
+S1WinD <- Season1Cleaned |>
+  filter(Role == 'Damage') |>
+  select(Win.Rate...)
+# Season 2
+S2WinS <- Season2Cleaned |>
+  filter(Role == 'Support') |>
+  select(Win.Rate...)
+S2WinT <- Season2Cleaned |>
+  filter(Role == 'Tank') |>
+  select(Win.Rate...)
+S2WinD <- Season2Cleaned |>
+  filter(Role == 'Damage') |>
+  select(Win.Rate...)
+# Season 3
+S3WinS <- Season3Cleaned |>
+  filter(Role == 'Support') |>
+  select(Win.Rate...)
+S3WinT <- Season3Cleaned |>
+  filter(Role == 'Tank') |>
+  select(Win.Rate...)
+S3WinD <- Season3Cleaned |>
+  filter(Role == 'Damage') |>
+  select(Win.Rate...)
+
+# Testing Win Means
+
+# Setup
+xmean <- mean(S1WinS$Win.Rate...)
+ymean <- mean(S1WinD$Win.Rate...)
+
+xmean <- mean(S1WinS$Win.Rate...)
+ymean <- mean(S1WinT$Win.Rate...)
+
+# Function to compare means
+CompareMeans <- function(x,y){
+  if (mean(x)==mean(y)) return('same')
+  if (mean(x)>mean(y)) return('positive')
+  if (mean(x)<mean(y))return('negative')
+}
+CompareMeans(xmean,ymean)
+
+# Compare Season One Support to Damage than Support to Tank and Damage win rates were positive
+# S1S - 46.82844
+# S1T - 46.80025
+# S1D - 46.19618
+
+# Compare Season Two Support to Damage than Support to Tank and Damage win rates were positive
+# S2S - 46.8925
+# S2T - 46.47125
+# S2D - 46.17471
+
+# Compare Season Three Support to Damage than Support to Tank and Damage win rates were positive
+# S3S - 48.98531
+# S3T - 46.92761
+# S3D - 47.98544
+
+# Concludes that between all three season Support roles have greater mean win rates than Tank and Damage roles
+
+# S1WinSplot <- ggplot() +
+  #geom_hex(Season1Cleaned,
+               #mapping=aes(x=Role, y=Win.Rate..., color=Role))
+S1WinSplot
+
+S1 <- ggplot(SeasonalWinRole,
+       aes(x=Role, y=Average_win_rate_S1, color=Role)) +
+  geom_point(size=6) +
+  ggtitle('Season One Wins') +
+  ylim(44,50)
+S1
+S2 <- ggplot(SeasonalWinRole,
+             aes(x=Role, y=Average_win_rate_S2, color=Role)) +
+  geom_point(size=6) +
+  ggtitle('Season Two Wins') +
+  ylim(44,50)
+S2
+S3 <- ggplot(SeasonalWinRole,
+             aes(x=Role, y=Average_win_rate_S3, color=Role)) +
+  geom_point(size=6) +
+  ggtitle('Season Three Wins') +
+  ylim(44,50)
+S3
+# Win Visual by Role
+# WinRates <- grid.arrange(S1 + S2 + S3)
+# WinRates
+# Pick data fame
+SeasonalPickRole <- SeasonalRoles |>
+  select(Role, Average_pick_rate_S1, Average_pick_rate_S2, Average_pick_rate_S3)
+View(SeasonalPickRole)
+
+S1P <- ggplot(SeasonalPickRole,
+             aes(x=Role, y=Average_pick_rate_S1, color=Role)) +
+  geom_point(size=6) +
+  ggtitle('Season One Picks') +
+  ylim(0,7)
+S1P
+S2P <- ggplot(SeasonalPickRole,
+             aes(x=Role, y=Average_pick_rate_S2, color=Role)) +
+  geom_point(size=6) +
+  ggtitle('Season Two Picks') +
+  ylim(0,7)
+S2P
+S3P <- ggplot(SeasonalPickRole,
+             aes(x=Role, y=Average_pick_rate_S3, color=Role)) +
+  geom_point(size=6) +
+  ggtitle('Season Three Picks') +
+  ylim(0,7)
+# Pick Visual
+# PickRates <- S1P + S2P + S3P
+# PickRates
+# Support has a higher average win rate and pick rate in all three seasons
+
+# Count depreciation of pick rate
+HeroCount <- Season3Cleaned |>
+  group_by(Role) |>
+  summarise(HeroCountByRole = unique(Hero))
+View(HeroCount)
+# Out of the 36 hero selections: 17 are Damage, 11 Tank, and 8 Support
+# Depreciate by pool size to show over inflated support pick rate
+Role <- c("Damage","Tank","Support")
+RoleNum <- c("17","11","8")
+PickDeflator <- c("0.472","0.305","0.222")
+Season_One <- c("0.769880616","1.876846170","0.4840155")
+Season_Two <- c("1.077548152","1.574324295","0.49273904")
+Season_Three <- c("1.4811081152","2.068948285","0.638123904")
+Deflated_Pick <- data.frame(Role, PickDeflator, Season_One, Season_Two, Season_Three)
+View(Deflated_Pick)
+# Despite having the highest pick, when deflated for the pool in each role Support is picked the least to a staggering degree.
+
+# Conclusion of the first section is that a player selecting to play Support over the other two roles will experience more success and less competition.
+
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.

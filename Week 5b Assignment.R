@@ -1,0 +1,29 @@
+# Name: Christopher Kingston
+# Date: 02/15/2023
+# Assignment 5b
+
+# Download data set and import to R
+getwd()
+setwd('C:/CODING/Math17/Week05/')
+list.files()
+library('readxl')
+MelbourneHousing <- read_excel('MelbourneHousing.xlsx')
+names(MelbourneHousing)
+
+# Extract property addresses with missing landsizes
+M <- ifelse(MelbourneHousing$Landsize==0,'M','P')
+M
+Addresses <- subset(MelbourneHousing,Landsize == 0, select = Address)
+Addresses
+
+# Assume 1% tax on M
+Price <- subset(MelbourneHousing,Landsize == 0, select = Price)
+Price
+Tax <- Price*0.01
+Tax
+
+# Loop Address with tax in AUD
+AddressTax <- data.frame(Addresses,Tax)
+AddressTax
+OutputAddresses <- sprintf('%s $ %s  AUD',AddressTax$Address,AddressTax$Price)
+OutputAddresses
